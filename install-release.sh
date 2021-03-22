@@ -232,17 +232,17 @@ get_version() {
       return
     fi
   fi
- # # Get V2Ray release version number
-#  TMP_FILE="$(mktemp)"
-#  if ! curl -x "${PROXY}" -sS -H "Accept: application/vnd.github.v3+json" -o "$TMP_FILE" 'https://api.github.com/repos/v2fly/v2ray-core/releases/latest'; then
-#    "rm" "$TMP_FILE"
-#    echo 'error: Failed to get release list, please check your network.'
-#    exit 1
-#  fi
-#  RELEASE_LATEST="$(sed 'y/,/\n/' "$TMP_FILE" | grep 'tag_name' | awk -F '"' '{print $4}')"
-#  "rm" "$TMP_FILE"
-#  RELEASE_VERSION="v${RELEASE_LATEST#v}"
-#  # Compare V2Ray version numbers
+  # Get V2Ray release version number
+  TMP_FILE="$(mktemp)"
+  if ! curl -x "${PROXY}" -sS -H "Accept: application/vnd.github.v3+json" -o "$TMP_FILE" 'https://api.github.com/repos/v2fly/v2ray-core/releases/latest'; then
+    "rm" "$TMP_FILE"
+    echo 'error: Failed to get release list, please check your network.'
+    exit 1
+  fi
+  RELEASE_LATEST="$(sed 'y/,/\n/' "$TMP_FILE" | grep 'tag_name' | awk -F '"' '{print $4}')"
+  "rm" "$TMP_FILE"
+  RELEASE_VERSION="v${RELEASE_LATEST#v}"
+  # Compare V2Ray version numbers
   if [[ "$RELEASE_VERSION" != "$CURRENT_VERSION" ]]; then
     RELEASE_VERSIONSION_NUMBER="${RELEASE_VERSION#v}"
     RELEASE_MAJOR_VERSION_NUMBER="${RELEASE_VERSIONSION_NUMBER%%.*}"
@@ -276,7 +276,7 @@ get_version() {
 }
 
 download_v2ray() {
-  DOWNLOAD_LINK="https://github.com/v2fly/v2ray-core/releases/download/v4.22.1/v2ray-linux-64.zip"
+  DOWNLOAD_LINK="https://github.com/v2fly/v2ray-core/releases/download/$RELEASE_VERSION/v2ray-linux-$MACHINE.zip"
   echo "Downloading V2Ray archive: $DOWNLOAD_LINK"
   if ! curl -x "${PROXY}" -R -H 'Cache-Control: no-cache' -o "$ZIP_FILE" "$DOWNLOAD_LINK"; then
     echo 'error: Download failed! Please check your network or try again.'
